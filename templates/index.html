@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DECO3000 AI App</title>
+    <style>
+        body {
+            background-color: rgb(151, 151, 151);
+        }
+    </style>
+</head>
+<body>
+    <h1>Hello World!</h1>
+    <h2>Welcome to FlaskApp!</h2>
+    <p>This is the start of the AI App I think?</p>
+    <button id="createSticky">Create sticky note</button>
+    <h2 id="editable">...</h2>
+    <script>
+        var stickyNoteButton = document.getElementById("createSticky");
+        stickyNoteButton.addEventListener("click", createStickyModal);
+
+        function createStickyModal() {
+            console.log('Create sticky note button was clicked.');
+            var heading = document.getElementById("editable");
+            heading.textContent = "Create sticky note button was clicked";
+        }
+    </script>
+</body>
+</html>
