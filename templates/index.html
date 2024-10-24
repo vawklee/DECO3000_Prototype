@@ -46,12 +46,18 @@
         <section class="stickyModalContent">
             <span class="closeModal">&times;</span>
             <p>This is where you would type your thoughts and how you are feeling today</p>
-            <form>
+            <!--Modified the form to send a request to Flask Backend to be reviewed-->
+            <form id="'stickyNoteForm" onsubmit="submitForm(event)" method ="POST">
+                <label for="stickyNoteInput">How are you feeling? What are your thoughts?</label>
+                <input required type="text" id="stickyNoteInput" name="stickyNoteInput" placeholder="Type something here...." value="">
+                <input type="submit" value="Submit">
+            </form>
+            <!-- <form>
                 <label for="stickyNoteInput">How are you feeling? What are your thoughts?</label>
                 <input required type="text" id="stickyNoteInput" name="stickyNoteInput" placeholder="Type something here...." value="">
 
                 <input type="submit" value="Submit">
-            </form>
+            </form> -->
         </section>
     </article>
 
@@ -80,6 +86,38 @@
         window.onclick = function(event) {
             if (event.target == stickyModal) {
                 stickyModal.style.display = "none";
+            }
+        }
+        // This section handles the sending of form data to flask backend
+        // async function always returns a Promise, which is a placeholder for a value that will be resolved (completed) in the future
+        async function submitForm(event) {
+            //no default submission of form
+            event.preventDefault();
+            //get user input from form a9sticky note)
+            const userInput = document.getElementById('stickyNoteInput').value;
+            //sending this input to Flask backend using fetch
+            //using try to catch errors in 'catch' block
+            try{
+                const response = await fetch('/analyse',{ //await pauses execution until fetch is complete 
+                    method:'POST', //specifies HTTP requesr
+                    headers:{
+                        'content-type': 'application/json'// data is sent in the format of json
+                    },
+                    body: JSON.stringify({user_input: userInput})//converts Javascript object to a JSON string whre user_input is the key and userInput is the corresponding value pair
+                });
+                //parse json response from backend
+                const result = await response.json();
+                //display the result on the page 
+                if(result.error){
+                    alert('Error: '+ result.error);
+                } else{
+                    const editable = document.getElementById("editable"); //this is getting the aforementioned editable h2 element which is initially placeholder but now being updated with the result
+                    editable.textContent = `You said: "${result.input}" - Sentiment: ${result.sentiment}`;
+                }
+                closeModal();
+            } catch (error){
+                console.error('Error during fetch: ', error);
+                alert('Something went wrong while contacting the backend.');
             }
         }
     </script>
