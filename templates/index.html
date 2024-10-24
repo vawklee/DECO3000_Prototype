@@ -112,7 +112,7 @@
                     alert('Error: '+ result.error);
                 } else{
                     const editable = document.getElementById("editable"); //this is getting the aforementioned editable h2 element which is initially placeholder but now being updated with the result
-                    editable.textContent = `Sentiment: ${result.sentiment}`;
+                    editable.textContent = `You said: "${result.input}" - Sentiment: ${result.sentiment}`;
                 }
                 closeModal();
             } catch (error){
