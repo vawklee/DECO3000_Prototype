@@ -31,3 +31,19 @@ def analyse():
         #The polarity score is a float within the range [-1.0, 1.0]
         if polarity >0:
             sentiment = 'positive'
+        elif polarity <0:
+            sentiment = 'negative'
+        else:
+            sentiment = 'neutral'
+            #return whatever the result of this sentiment analysis as usable input to feed into the LLM 
+            #creating a disctionary 
+            result = {
+                'input':user_input, #this is the content of what the user types into teh sticky note
+                'sentiment': sentiment, #this is the sentiment that we assigned through the textblob analysis 
+                #'polarity': polarity not sure if this is necessary 
+            }  
+            return jsonify(result)
+    else:
+        return jsonify({'error':'No input provided'}), 400
+        if __name__ == "__main__":
+            app.run(debug=True) #ask Daniel what this does
