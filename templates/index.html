@@ -70,7 +70,6 @@
 
         stickyNoteButton.addEventListener("click", createStickyModal);
         span.addEventListener("click", closeModal);
-
         function createStickyModal() {
             console.log('Create sticky note button was clicked.');
             var heading = document.getElementById("editable");
@@ -93,7 +92,7 @@
         async function submitForm(event) {
             //no default submission of form
             event.preventDefault();
-            //get user input from form a9sticky note)
+            //get user input from form a sticky note)
             const userInput = document.getElementById('stickyNoteInput').value;
             //sending this input to Flask backend using fetch
             //using try to catch errors in 'catch' block
@@ -112,8 +111,10 @@
                     alert('Error: '+ result.error);
                 } else{
                     const editable = document.getElementById("editable"); //this is getting the aforementioned editable h2 element which is initially placeholder but now being updated with the result
-                    editable.textContent = `You said: "${result.input}" - Sentiment: ${result.sentiment}`;
+                    editable.textContent = `You said: "${result.input}" - Sentiment: ${result.sentiment} - Result:${result.wordware_response}`;
                 }
+                console.log('Wordware Response:', result.wordware_response);
+
                 closeModal();
             } catch (error){
                 console.error('Error during fetch: ', error);

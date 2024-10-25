@@ -1,10 +1,57 @@
 # to run this app type flask --app app run into the terminal
 # flask run also works
+import os
+import json
+import requests
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 from textblob import TextBlob
-
+# Load API_KEY from .env
+load_dotenv()
+api_key = os.getenv('API_KEY')
+# Check if the API key was loaded correctly
+if not api_key:
+    print("Error: API key not found. Please check your .env file.")
+prompt_id = "70deab75-3dfc-4bb2-abb0-81d5c297638e"
 app = Flask(__name__)
+# Function to call Wordware API
+def call_wordware(input_text, sentiment):
+    inputs = {
+        "user_input": input_text,
+        "sentiment": sentiment
+    }
+    print(f"Sending data to Wordware: {inputs}")  # Debug: Check data being sent
+    # print(api_key)
+    try:
+        prompt_id = "70deab75-3dfc-4bb2-abb0-81d5c297638e"
+        # api_key = os.getenv('API_KEY')  # Ensure this is correctly loaded
+        print("Starting Wordware API request...")#debugging 
+        
+        response = requests.post(
+           f"https://app.wordware.ai/api/released-app/{prompt_id}/run",
+           json={"inputs": inputs},
+           headers={"Authorization": f"Bearer {api_key}"},
+           stream=True,
+                )
+        if response.status_code != 200:
+            print("Wordware Request failed with status code", response.status_code)
+            return {"error": "Wordware API call failed."}
+        # Process the streamed response
+        output = ""
+        for line in response.iter_lines():
+            if line:
+                content = json.loads(line.decode("utf-8"))
+                value = content["value"]
+                if value["type"] == "chunk":
+                    output += value["value"]
 
+        # Debugging: Log the output received from Wordware
+        print(f"Wordware response output: {output}")
+        return {"response": output}
+
+    except Exception as e:
+        print(f"Error calling Wordware: {str(e)}")
+        return {"error": f"Internal error: {str(e)}"}
 # @app.route("/")
 # def hello_world():
 #     return "<p>Hello, world!</p>"
@@ -43,11 +90,15 @@ def analyse():
                 sentiment = 'neutral'
             #return whatever the result of this sentiment analysis as usable input to feed into the LLM 
             #creating a disctionary 
+            # Call Wordware with the input and sentiment
+            wordware_result = call_wordware(user_input, sentiment)
+
+            # Return the result along with the sentiment analysis
             result = {
-                'input':user_input, #this is the content of what the user types into teh sticky note
-                'sentiment': sentiment, #this is the sentiment that we assigned through the textblob analysis 
-                #'polarity': polarity not sure if this is necessary 
-            }  
+                'input': user_input,
+                'sentiment': sentiment,
+                'wordware_response': wordware_result
+            }
             return jsonify(result)
 
         return jsonify({'error':'No input provided'}), 400
