@@ -144,32 +144,6 @@
     </main>
 
     <script>
-        // ---- Old form using modal popup ----
-        // var stickyNoteButton = document.getElementById("createSticky");
-        // var stickyModal = document.getElementById("stickyModal");
-        // var span = document.getElementsByClassName("closeModal")[0];
-
-        // stickyNoteButton.addEventListener("click", createStickyModal);
-        // span.addEventListener("click", closeModal);
-        // function createStickyModal() {
-        //     console.log('Create sticky note button was clicked.');
-        //     var heading = document.getElementById("editable");
-        //     heading.textContent = "Create sticky note button was clicked";
-
-        //     stickyModal.style.display = "block";
-        // }
-
-        // function closeModal() {
-        //     stickyModal.style.display = "none";
-        //     console.log('close modal button clicked');
-        // }
-        // window.onclick = function(event) {
-        //     if (event.target == stickyModal) {
-        //         stickyModal.style.display = "none";
-        //     }
-        // }
-        // ---- ---- ---- ---- ---- ----
-
         // code derived from Advanced Web
         const stickyNoteForm = document.getElementById('stickyNoteForm');
         var stickyNoteDisplay = document.getElementById("stickyNoteDisplay");
@@ -252,6 +226,12 @@
 
             return '<p>' + markdown + '</p>';
         }
+        function removeFirstLine(input) {
+            input = input.replace(/<p><br>Wordware's Suggestion:([^<]*)<h1>/, '<h1>');
+            input = input.replace(/<p><br>Wordware's Suggestion:([^<]*)<h2>/, '<h2>');
+            input = input.replace(/<p><br>Wordware's Suggestion:([^<]*)<h3>/, '<h3>');
+            return input;
+        }
 
         // ---- TextBlob and Wordware Backend ----
         // This section handles the sending of form data to flask backend
@@ -301,13 +281,22 @@
                     // Combine all into the sticky note's content
                     // newStickyNote.textContent = `${userText}${sentimentText}${wordwareText}`;
                     newStickyNote.textContent = `${wordwareText}`;
+                    console.log('wordware text', wordwareText);
+
                     let convertedText = mdToHtml(wordwareText);
                     console.log(convertedText);
-                    newStickyNote.innerHTML = convertedText;
+
+                    cleanedOutput = removeFirstLine(convertedText);
+                    console.log(cleanedOutput);
+
+                    // newStickyNote.innerHTML = convertedText;
+                    newStickyNote.innerHTML = cleanedOutput;
+
 
                     // Append the new sticky note to the container
                     // stickyNotesContainer.appendChild(newStickyNote);
-                    stickyNotesContainer.innerHTML = convertedText;
+                    // stickyNotesContainer.innerHTML = convertedText;
+                    stickyNotesContainer.innerHTML = cleanedOutput;
                     addStickyNote(userText);
                     // displayStickyNotes();
                 }
