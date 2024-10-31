@@ -5,7 +5,7 @@
     <title>DECO3000 AI App</title>
     <style>
         :root {
-            --background: rgb(252, 250, 235);
+            --background: rgb(253, 253, 249);
             --pink: rgb(255, 186, 186);
             --purple: rgb(218, 186, 255);
             --blue: rgb(186, 225, 255);
@@ -14,6 +14,36 @@
         }
         body {
             background-color: var(--background);
+            font-size: larger;
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            flex-direction: column;
+            width: 90vw;
+            margin: auto;
+        }
+
+        article {
+            align-self: center;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        article>section {
+            width: 45%;
+            height: 90vh;
+            flex-wrap: wrap;
+        }
+        
+        .outputSection {
+            overflow-y: scroll;
+            border: rgb(77, 77, 77) solid 2px;
+            border-radius: 3px;
+            background-color: var(--background);
+            filter: drop-shadow(0px 2px 4px #a8a8a8);
+        }
+        .outputSection>div {
+            margin: 15px;
         }
 
         .popup {
@@ -47,46 +77,71 @@
         }
 
         #stickyNoteDisplay {
+            width: 100%;
             display: flex;
             flex-direction: row;
-            width: 95vw;
+            flex-wrap: wrap;
         }
         #stickyNoteDisplay>div {
-            width: 500px;
-            height: 350px;
-            border: red solid 2px;
-            border-radius: 2px;
-            background-color: var(--green);
+            width: 200px;
+            height: 200px;
+            border-radius: 5px;
+            background-color: var(--purple);
+            padding: 15px;
+            margin: 5px;
             filter: drop-shadow(3px 3px 3px #717171);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin: 15px 0;
+        }
+        input[type=text] {
+            margin: 30px 0;
+            height: 20vh;
+            width: 100%;
+        }
+        input[type=submit] {
+            height: 50px;
         }
     </style>
 </head>
 <body>
-    <h1>DECO3000 Mental Health Sticky Notes AI App</h1>
-    <p>Welcome to the sticky-note whiteboard!</p>
-    <!-- button opens the stickynote modal -->
-    <!-- <button id="createSticky">Create sticky note</button> -->
-    <form id="stickyNoteForm" onsubmit="submitForm(event)" method ="POST">
-        <label for="stickyNoteInput">How are you feeling today? Type out your thoughts or experiences today...</label>
-        <input required type="text" id="stickyNoteInput" name="stickyNoteInput" placeholder="Explain your feelings here...." value="">
-        <input type="submit" value="Submit" onclick="submitForm(event)" method="POST" id="formSubmitBtn">
-    </form>
-    <div id="stickyNoteDisplay"></div>
-    <!-- <article id="stickyModal" class="popup">
-        <section class="stickyModalContent">
-            <span class="closeModal">&times;</span>
-            <p>This is where you would type your thoughts and how you are feeling today</p>
-            Modified the form to send a request to Flask Backend to be reviewed
-            <form id="'stickyNoteForm" onsubmit="submitForm(event)" method ="POST">
-                <label for="stickyNoteInput">How are you feeling? What are your thoughts?</label>
-                <input required type="text" id="stickyNoteInput" name="stickyNoteInput" placeholder="Type something here...." value="">
-                <input type="submit" value="Submit">
-            </form>
-        </section>
-    </article> -->
-
-    <!-- <h2 id="editable">...</h2> -->
-    <div id="stickyNotesContainer"></div>
+    <main>
+        <h1>DECO3000 Mental Health Sticky Notes AI App</h1>
+        <!-- <p>Welcome to the sticky-note whiteboard!</p> -->
+        <article>
+            <section class="promptSection">
+                <!-- button opens the stickynote modal -->
+                <!-- <button id="createSticky">Create sticky note</button> -->
+                <form id="stickyNoteForm" onsubmit="submitForm(event)" method="POST">
+                    <label for="stickyNoteInput">Type out your thoughts or experiences today, like how you are feeling and what has happened in your day. When you are done, click the submit button <strong>once</strong> to get guidance on your emotions and how to communicate them.</label>
+                    <input required type="text" id="stickyNoteInput" name="stickyNoteInput" placeholder="Type up your feelings here...." value="">
+                    <input type="submit" value="Submit" id="formSubmitBtn" onclick="onButtonClick()">
+                </form>
+                <div id="stickyNoteDisplay"></div>
+                <!-- <article id="stickyModal" class="popup">
+                    <section class="stickyModalContent">
+                        <span class="closeModal">&times;</span>
+                        <p>This is where you would type your thoughts and how you are feeling today</p>
+                        Modified the form to send a request to Flask Backend to be reviewed
+                        <form id="'stickyNoteForm" onsubmit="submitForm(event)" method ="POST">
+                            <label for="stickyNoteInput">How are you feeling? What are your thoughts?</label>
+                            <input required type="text" id="stickyNoteInput" name="stickyNoteInput" placeholder="Type something here...." value="">
+                            <input type="submit" value="Submit">
+                        </form>
+                    </section>
+                </article> -->
+            
+                <!-- <h2 id="editable">...</h2> -->
+            </section>
+            <section class="outputSection">
+                <!-- stickyNotesContainer is used for the output -->
+                <div id="stickyNotesContainer"><em>Type something to generate an output</em></div>
+            </section>
+        </article>
+    </main>
 
     <script>
         // ---- Old form using modal popup ----
@@ -115,7 +170,8 @@
         // }
         // ---- ---- ---- ---- ---- ----
 
-        const form = document.getElementById('stickyNoteForm');
+        // code derived from Advanced Web
+        const stickyNoteForm = document.getElementById('stickyNoteForm');
         var stickyNoteDisplay = document.getElementById("stickyNoteDisplay");
         var submitButton = document.getElementById('formSubmitBtn');
 
@@ -132,7 +188,7 @@
 
                     item.appendChild(information);
                     stickyNoteDisplay.appendChild(item);
-                    form.reset();
+                    stickyNoteForm.reset();
                 })
             } else {
                 console.log("sticky note display is currently empty");
@@ -150,7 +206,7 @@
             if (localSticky == null) {
                 localSticky = [stickyNote];
             } else {
-                if (localSticky.find(element => element.id === book.id)) {
+                if (localSticky.find(element => element.id === stickyNote.id)) {
                     console.log("Stickynote ID already exists");
                 } else {
                     localSticky.push(stickyNote);
@@ -161,13 +217,41 @@
             displayStickyNotes();
         }
 
-        form.addEventListener('submit', function(e) {
-            console.log(form.elements.stickyNoteInput.value);
+        function onButtonClick() {
+            // setTimeout(() => {
+            //     console.log("Waited for 5 seconds");
+            //     document.body.style.cursor = 'wait';
+            // }, 5000);
+            // document.body.style.cursor = 'default';
 
-            addStickyNote(form.elements.stickyNote.value);
-            form.reset();
-        })
-        displayStickyNotes();
+            let userSubmission = document.getElementById("stickyNoteInput").value;
+            console.log(userSubmission);
+            // addStickyNote(userSubmission);
+            // displayStickyNotes();
+        }
+
+        // translating markdown to usable HTML
+        function mdToHtml(markdown) {
+            markdown = markdown.replace(/#### (.+)/g, '<h4>$1</h4>');
+            markdown = markdown.replace(/### (.+)/g, '<h3>$1</h3>');
+            markdown = markdown.replace(/## (.+)/g, '<h2>$1</h2>');
+            markdown = markdown.replace(/# (.+)/g, '<h1>$1</h1>');
+
+            // Convert bold text
+            markdown = markdown.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            // Convert italic text
+            markdown = markdown.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+            // Convert lists
+            markdown = markdown.replace(/- (.+)/g, '<li>$1</li>');
+            markdown = markdown.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+
+            // Convert paragraphs
+            markdown = markdown.replace(/\n\n/g, '</p><p>');
+            markdown = markdown.replace(/\n/g, '<br>');
+
+            return '<p>' + markdown + '</p>';
+        }
 
         // ---- TextBlob and Wordware Backend ----
         // This section handles the sending of form data to flask backend
@@ -177,6 +261,11 @@
             event.preventDefault();
             //get user input from form a sticky note)
             const userInput = document.getElementById('stickyNoteInput').value;
+            // setTimeout(() => {
+            //     console.log("Waited for 5 seconds");
+            //     document.body.style.cursor = 'wait';
+            // }, 5000);
+            // document.body.style.cursor = 'default';
             //sending this input to Flask backend using fetch
             //using try to catch errors in 'catch' block
             try{
@@ -200,24 +289,35 @@
                     newStickyNote.classList.add('sticky-note');  // Add CSS class for styling
 
                     // Format the data for display
-                    const userText = `You said: "${result.input}"`;
+                    // const userText = `You said: "${result.input}"`;
+                    const userText = result.input;
+                    console.log(userText);
                     const sentimentText = ` - Sentiment: ${result.sentiment}`;
+                    console.log(sentimentText);
                     const wordwareText = result.wordware_response.response ? 
                         `\nWordware's Suggestion: ${result.wordware_response.response}` : 
                         `\nWordware's Suggestion: No response available.`;
 
                     // Combine all into the sticky note's content
-                    newStickyNote.textContent = `${userText}${sentimentText}${wordwareText}`;
+                    // newStickyNote.textContent = `${userText}${sentimentText}${wordwareText}`;
+                    newStickyNote.textContent = `${wordwareText}`;
+                    let convertedText = mdToHtml(wordwareText);
+                    console.log(convertedText);
+                    newStickyNote.innerHTML = convertedText;
 
                     // Append the new sticky note to the container
-                    stickyNotesContainer.appendChild(newStickyNote);
+                    // stickyNotesContainer.appendChild(newStickyNote);
+                    stickyNotesContainer.innerHTML = convertedText;
+                    addStickyNote(userText);
+                    // displayStickyNotes();
                 }
-                closeModal();
+                // closeModal();
             } catch (error){
                 console.error('Error during fetch: ', error);
                 alert('Something went wrong while contacting the backend.');
             }
         }
+        window.onload = displayStickyNotes();
     </script>
 </body>
 </html>
