@@ -150,16 +150,24 @@
         var submitButton = document.getElementById('formSubmitBtn');
 
         function displayStickyNotes() {
+            const today = new Date().toDateString();
             let localSticky = JSON.parse(localStorage.getItem('stickies'));
+            stickyNoteDisplay.innerHTML = ''; // Clear the display before rendering (review this)
 
             if (localSticky !== null) {
                 localSticky.forEach(function(stickyNote) {
                     let item = document.createElement('div');
                     item.setAttribute('data-id', stickyNote.id);
+                     // Add the date
+            let dateElement = document.createElement('p');
+            dateElement.classList.add('sticky-date');
+            dateElement.textContent = `Date: ${stickyNote.date}`;  // Display the date
+
 
                     let information = document.createElement('p');
                     information.innerHTML = `<p>${stickyNote.info}</p>`;
 
+                    item.appendChild(dateElement);
                     item.appendChild(information);
                     stickyNoteDisplay.appendChild(item);
                     stickyNoteForm.reset();
@@ -250,7 +258,7 @@
             //using try to catch errors in 'catch' block
             try{
                 const response = await fetch('/analyse',{ //await pauses execution until fetch is complete 
-                    method:'POST', //specifies HTTP requesr
+                    method:'POST', //specifies HTTP request
                     headers:{
                         'content-type': 'application/json'// data is sent in the format of json
                     },
