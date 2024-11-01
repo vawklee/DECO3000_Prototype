@@ -106,4 +106,4 @@ def analyse():
         print(f"Error occurred: {str(e)}")
         return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 if __name__ == "__main__":
-            app.run(debug=True) #ask Daniel what this does
+            app.run(debug=True) 
