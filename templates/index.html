@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DECO3000 AI App</title>
+    <title>DECO3000 AI Prototype</title>
     <style>
         :root {
             --background: rgb(253, 253, 249);
             --pink: rgb(255, 186, 186);
             --purple: rgb(218, 186, 255);
+            --darkPurple: rgb(106, 71, 130);
             --blue: rgb(186, 225, 255);
             --green: rgb(199, 255, 186);
             --yellow: rgb(255, 252, 186);
@@ -22,6 +23,10 @@
             margin: auto;
         }
 
+        h1 {
+            margin-top: 55px;
+        }
+
         article {
             align-self: center;
             width: 100%;
@@ -31,49 +36,36 @@
         }
         article>section {
             width: 45%;
-            height: 90vh;
+            height: 88vh;
             flex-wrap: wrap;
         }
         
-        .outputSection {
-            overflow-y: scroll;
-            border: rgb(77, 77, 77) solid 2px;
+        .outputSection div {
+            /* border: rgb(77, 77, 77) solid 2px; */
             border-radius: 3px;
-            background-color: var(--background);
+            background-color: var(--blue);
             filter: drop-shadow(0px 2px 4px #a8a8a8);
-        }
-        .outputSection>div {
             margin: 15px;
         }
 
-        .popup {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 85%;
-            height: 85%;
-            overflow: auto;
-            background-color: rgb(77, 77, 77);
+        #outputLabel {
+            padding: 5px 10px;
+            width: 25%;
+            background-color: rgb(151, 198, 234);
+            border:rgb(130, 175, 210) solid 2px;
+            border-radius: 5px;
+            text-align: center;
         }
-        .stickModalContent {
-            background-color: blue;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid red;
-            width: 88%;
+        
+        #stickyNotesContainer {
+            overflow-y: scroll;
+            height: 90%;
         }
-        .closeModal {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+        #stickyNotesContainer>p {
+            margin: 15px;
         }
-        .closeModal:hover, .closeModal:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
+        #stickNotesContainer>h2 {
+            color: red;
         }
 
         #stickyNoteDisplay {
@@ -82,14 +74,19 @@
             flex-direction: row;
             flex-wrap: wrap;
         }
+
+        /* styling for each sticky note */
         #stickyNoteDisplay>div {
             width: 200px;
             height: 200px;
             border-radius: 5px;
-            background-color: var(--purple);
             padding: 15px;
             margin: 5px;
+            background-color: #a8a8a8;
             filter: drop-shadow(3px 3px 3px #717171);
+        }
+        .activeSticky {
+            background-color: var(--purple);
         }
 
         form {
@@ -98,18 +95,27 @@
             margin: 15px 0;
         }
         input[type=text] {
+            padding: 20px;
+            font-size: medium;
             margin: 30px 0;
             height: 20vh;
             width: 100%;
+            border:#adadad solid 2px;
+            border-radius: 8px;
+        }
+        input[type=text]:focus {
+            border: var(--darkPurple) solid 2px;
         }
         input[type=submit] {
             height: 50px;
+            width: 100%;
+            align-self: center;
         }
     </style>
 </head>
 <body>
     <main>
-        <h1>DECO3000 Mental Health Sticky Notes AI App</h1>
+        <h1>the emo-board: DECO3000 Mental Health Sticky Notes AI App</h1>
         <!-- <p>Welcome to the sticky-note whiteboard!</p> -->
         <article>
             <section class="promptSection">
@@ -138,7 +144,8 @@
             </section>
             <section class="outputSection">
                 <!-- stickyNotesContainer is used for the output -->
-                <div id="stickyNotesContainer"><em>Type something to generate an output</em></div>
+                <div id="outputLabel">Generated response</div>
+                <div id="stickyNotesContainer"><p><em>Type something and add a sticky note to generate an output</em></p></div>
             </section>
         </article>
     </main>
@@ -155,7 +162,17 @@
             if (localSticky !== null) {
                 localSticky.forEach(function(stickyNote) {
                     let item = document.createElement('div');
+                    let currentDate = new Date().toDateString();
                     item.setAttribute('data-id', stickyNote.id);
+                    console.log('sticknote date', stickyNote.date);
+                    consolelog('todays date', currentDate);
+
+                    // if stickynote was made on the same day, make it purple, otherwise old sticky notes are grey
+                    if (stickyNote.date === currentDate) {
+                        item.className = "activeSticky";
+                    } else {
+                        item.className = "";
+                    }
 
                     let information = document.createElement('p');
                     information.innerHTML = `<p>${stickyNote.info}</p>`;
@@ -230,8 +247,46 @@
             input = input.replace(/<p><br>Wordware's Suggestion:([^<]*)<h1>/, '<h1>');
             input = input.replace(/<p><br>Wordware's Suggestion:([^<]*)<h2>/, '<h2>');
             input = input.replace(/<p><br>Wordware's Suggestion:([^<]*)<h3>/, '<h3>');
+            
+            // let sections = input.split(/<h2> /).filter(Boolean);
+
             return input;
         }
+
+        // How to manage the emotions you are feeling
+        // How to commmunicate your emotions
+
+        // function checkDate() {
+        //     let localSticky = JSON.parse(localStorage.getItem('stickies'));
+        //     let currentDate = new Date().toDateString();
+
+        //     // if (localSticky !== null) {
+        //     //     localSticky.forEach(function(stickyNote) {
+        //     //         let item = document.createElement('div');
+        //     //         item.setAttribute('data-id', stickyNote.id);
+
+        //     //         let information = document.createElement('p');
+        //     //         information.innerHTML = `<p>${stickyNote.info}</p>`;
+
+        //     //         item.appendChild(information);
+        //     //         stickyNoteDisplay.appendChild(item);
+        //     //         stickyNoteForm.reset();
+        //     //     })
+        //     // } else {
+        //     //     console.log("sticky note display is currently empty");
+        //     // }
+        //     if (localSticky !== null) {
+        //         localSticky.forEach(function(stickyNote) {
+        //             console.log(stickyNote.id, stickyNote.info, stickyNote.date);
+        //             console.log('todays date', currentDate);
+        //             console.log(stickyNote.classList);
+        //             if (stickyNote.date = currentDate) {
+        //             }
+        //         })
+        //     } else {
+        //         console.log("sticky note display is currently empty");
+        //     }
+        // }
 
         // ---- TextBlob and Wordware Backend ----
         // This section handles the sending of form data to flask backend
@@ -241,6 +296,7 @@
             event.preventDefault();
             //get user input from form a sticky note)
             const userInput = document.getElementById('stickyNoteInput').value;
+            document.body.style.cursor = 'wait';
             // setTimeout(() => {
             //     console.log("Waited for 5 seconds");
             //     document.body.style.cursor = 'wait';
@@ -298,6 +354,7 @@
                     // stickyNotesContainer.innerHTML = convertedText;
                     stickyNotesContainer.innerHTML = cleanedOutput;
                     addStickyNote(userText);
+                    document.body.style.cursor = 'default';
                     // displayStickyNotes();
                 }
                 // closeModal();
@@ -307,6 +364,7 @@
             }
         }
         window.onload = displayStickyNotes();
+        // window.onload = checkDate();
     </script>
 </body>
 </html>
