@@ -60,7 +60,9 @@ def call_wordware(input_text, sentiment):
 @app.route("/")
 #def hello():
 def index():
-    # return 'Index Page'
+    if request.method == 'POST':
+        # Handle POST request here, if needed
+        pass
     return render_template('index.html')
 
 # @app.route("/createSticky")
@@ -70,6 +72,7 @@ def index():
 @app.route("/analyse", methods=['POST'])
 def analyse():
     try:
+        print("Received a POST request on /analyse")  # Debugging log
         data = request.get_json()# get Json data from the request
         print(f"Received JSON data: {data}")  # Log the data received for debugging
         if not data:
