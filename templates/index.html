@@ -210,7 +210,12 @@
             <section class="outputSection">
                 <!-- stickyNotesContainer is used for the output -->
                 <div id="outputLabel">Generated guidance</div>
-                <div id="stickyNotesContainer"><p><em>Type something and add a sticky note to generate an output</em></p></div>
+                <div id="stickyNotesContainer"><p><em>Type something and add a sticky note to generate an output</em></p>
+                    <button id="generateBtn" onclick="generateResponse()">
+                        Generate Response
+                      </button> 
+                </div>
+                       
             </section>
         </article>
     </main>
@@ -245,8 +250,14 @@
                     let information = document.createElement('p');
                     information.innerHTML = `<p>${stickyNote.info}</p>`;
 
+                    // Create a delete button
+                    let deleteButton = document.createElement('button');
+                    deleteButton.textContent = "Delete";
+                    deleteButton.onclick = () => deleteStickyNote(stickyNote.id);
+
                     item.appendChild(dateElement);
                     item.appendChild(information);
+                    item.appendChild(deleteButton); // Add delete button to sticky note
                     stickyNoteDisplay.appendChild(item);
                     stickyNoteForm.reset();
                 })
@@ -279,18 +290,18 @@
             displayStickyNotes();
         }
 
-        function onButtonClick() {
-            // setTimeout(() => {
-            //     console.log("Waited for 5 seconds");
-            //     document.body.style.cursor = 'wait';
-            // }, 5000);
-            // document.body.style.cursor = 'default';
+        // function onButtonClick() {
+        //     // setTimeout(() => {
+        //     //     console.log("Waited for 5 seconds");
+        //     //     document.body.style.cursor = 'wait';
+        //     // }, 5000);
+        //     // document.body.style.cursor = 'default';
 
-            let userSubmission = document.getElementById("stickyNoteInput").value;
-            console.log(userSubmission);
-            // addStickyNote(userSubmission);
-            // displayStickyNotes();
-        }
+        //     let userSubmission = document.getElementById("stickyNoteInput").value;
+        //     console.log(userSubmission);
+        //     // addStickyNote(userSubmission);
+        //     // displayStickyNotes();
+        // }
 
         // translating markdown to usable HTML
         function mdToHtml(markdown) {
@@ -393,125 +404,187 @@
         // ---- TextBlob and Wordware Backend ----
         // This section handles the sending of form data to flask backend
         // async function always returns a Promise, which is a placeholder for a value that will be resolved (completed) in the future
-        async function submitForm(event) {
-            //no default submission of form
-            event.preventDefault();
-            //get user input from form a sticky note)
-            const userInput = document.getElementById('stickyNoteInput').value;
-            document.body.style.cursor = 'wait';
-            // setTimeout(() => {
-            //     console.log("Waited for 5 seconds");
-            //     document.body.style.cursor = 'wait';
-            // }, 5000);
-            // document.body.style.cursor = 'default';
-            //sending this input to Flask backend using fetch
-            //using try to catch errors in 'catch' block
-            try{
-                const response = await fetch('/analyse',{ //await pauses execution until fetch is complete 
-                    method:'POST', //specifies HTTP request
-                    headers:{
-                        'content-type': 'application/json'// data is sent in the format of json
-                    },
-                    body: JSON.stringify({user_input: userInput})//converts Javascript object to a JSON string whre user_input is the key and userInput is the corresponding value pair
-                });
-                //parse json response from backend
-                const result = await response.json();
-                //display the result on the page 
-                if(result.error){
-                    alert('Error: '+ result.error);
-                } else{
-                    const stickyNotesContainer = document.getElementById("stickyNotesContainer");
+        // Submit Button Function: Adds note to display and clears input
+         // Delete a sticky note by ID
+    function deleteStickyNote(id) {
+        let localSticky = JSON.parse(localStorage.getItem('stickies')) || [];
 
-                    // Create a new div for each sticky note
-                    const newStickyNote = document.createElement('div');
-                    newStickyNote.classList.add('sticky-note');  // Add CSS class for styling
+        // Filter out the note to delete
+        localSticky = localSticky.filter(note => note.id !== id);
 
-                    // Format the data for display
-                    // const userText = `You said: "${result.input}"`;
-                    const userText = result.input;
-                    console.log(userText);
-                    const sentimentText = ` - Sentiment: ${result.sentiment}`;
-                    console.log(sentimentText);
-                    const wordwareText = result.wordware_response.response ? 
-                        `\nWordware's Suggestion: ${result.wordware_response.response}` : 
-                        `\nWordware's Suggestion: No response available.`;
-
-                    // Combine all into the sticky note's content
-                    // newStickyNote.textContent = `${userText}${sentimentText}${wordwareText}`;
-                    newStickyNote.textContent = `${wordwareText}`;
-                    console.log('wordware text', wordwareText);
-
-                    let convertedText = mdToHtml(wordwareText);
-                    console.log(convertedText);
-
-                    cleanedOutput = removeFirstLine(convertedText);
-                    console.log(cleanedOutput);
-
-                    // newStickyNote.innerHTML = convertedText;
-                    // newStickyNote.innerHTML = cleanedOutput;
-                    // finalOutput = splitParagraphs(cleanedOutput);
-                    let tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = cleanedOutput;
-
-                    // get all the <h2> heading elements to split by with array to hold them
-                    var queryString = "h2";
-                    var queryStringTag = "H2";
-                    if (cleanedOutput.includes("h2")) {
-                        queryString = 'h2';
-                        queryStringTag = "H2";
-                    } else if (cleanedOutput.includes("h3")) {
-                        queryString = 'h3';
-                        queryStringTag = "H3";
-                    } 
-                    let headings = tempDiv.querySelectorAll(queryString);
-                    let contentSections = [];
-
-                    // loop each heading and get the content
-                    headings.forEach((heading) => {
-                        let content = heading.outerHTML;
-                        let nextElement = heading.nextElementSibling;
-
-                        while (nextElement && nextElement.tagName !== queryStringTag) {
-                            content += nextElement.outerHTML;
-                            nextElement = nextElement.nextElementSibling;
-                        }
-
-                        let sectionDiv = document.createElement('div');
-                        sectionDiv.innerHTML = content;
-                        contentSections.push(sectionDiv);
-                    })
-
-                    // let targetContainer = document.getElementById("stickyNotesContainer");
-                    let i = 1;
-                    let finalString = "";
-                    contentSections.forEach(section => {
-                        if (i <= 3) {
-                            // stickyNoteContainer.appendChild(section);
-                            console.log('split section', section.outerHTML);
-                            finalString = finalString + section.outerHTML;
-                            // stickyNotesContainer.innerHTML.appendChild(section.outerHTML);
-                            // stickyNotesContainer.innerHTML += `<div>${section.innerHTML}<div>`;
-                            
-                        }
-                        i++;
-                    })
-                    console.log('final html', finalString);
-                    stickyNotesContainer.innerHTML = finalString;
-
-                    // Append the new sticky note to the container
-                    // stickyNotesContainer.appendChild(newStickyNote);
-                    // stickyNotesContainer.innerHTML = convertedText;
-                    // stickyNotesContainer.innerHTML = finalOutput;
-                    addStickyNote(userText);
-                    document.body.style.cursor = 'default';
-                    // displayStickyNotes();
-                }
-                // closeModal();
-            } catch (error){
-                console.error('Error during fetch: ', error);
-                alert('Something went wrong while contacting the backend.');
-            }
+        // Update localStorage and refresh display
+        localStorage.setItem('stickies', JSON.stringify(localSticky));
+        displayStickyNotes();
+    }
+    async function submitForm(event) {
+        event.preventDefault();
+        const userInput = document.getElementById('stickyNoteInput').value;
+        if (userInput) {
+            addStickyNote(userInput);
+            document.getElementById('stickyNoteInput').value = '';
         }
+    }
+
+    // Generate Response Function: Sends today's notes to the backend
+    async function generateResponse() {
+        const localSticky = JSON.parse(localStorage.getItem('stickies')) || [];
+        const today = new Date().toDateString();
+
+        // Filter notes for today's date
+        const todaysNotes = localSticky
+            .filter(note => note.date === today)
+            .map(note => note.info)
+            .join(". ");
+
+        if (!todaysNotes) {
+            console.log("No notes from today. Nothing to send to Wordware.");
+            alert("No notes from today to analyze.");
+            return;
+        }
+
+        stickyNotesContainer.innerHTML = "<p>Generating suggestions based on today's notes...</p>";
+
+        try {
+            const response = await fetch('/analyse', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_input: todaysNotes })
+            });
+
+            const result = await response.json();
+
+            if (result.error) {
+                alert('Error: ' + result.error);
+            } else {
+                const wordwareText = result.wordware_response.response || "No response available.";
+                const convertedText = mdToHtml(removeFirstLine(wordwareText));
+                stickyNotesContainer.innerHTML = convertedText;
+            }
+        } catch (error) {
+            console.error('Error during fetch: ', error);
+            alert('Something went wrong while contacting the backend.');
+        }
+    }
+
+        // async function submitForm(event) {
+        //     //no default submission of form
+        //     event.preventDefault();
+        //     //get user input from form a sticky note)
+        //     const userInput = document.getElementById('stickyNoteInput').value;
+        //     document.body.style.cursor = 'wait';
+        //     // setTimeout(() => {
+        //     //     console.log("Waited for 5 seconds");
+        //     //     document.body.style.cursor = 'wait';
+        //     // }, 5000);
+        //     // document.body.style.cursor = 'default';
+        //     //sending this input to Flask backend using fetch
+        //     //using try to catch errors in 'catch' block
+        //     try{
+        //         const response = await fetch('/analyse',{ //await pauses execution until fetch is complete 
+        //             method:'POST', //specifies HTTP request
+        //             headers:{
+        //                 'content-type': 'application/json'// data is sent in the format of json
+        //             },
+        //             body: JSON.stringify({user_input: userInput})//converts Javascript object to a JSON string whre user_input is the key and userInput is the corresponding value pair
+        //         });
+        //         //parse json response from backend
+        //         const result = await response.json();
+        //         //display the result on the page 
+        //         if(result.error){
+        //             alert('Error: '+ result.error);
+        //         } else{
+        //             const stickyNotesContainer = document.getElementById("stickyNotesContainer");
+
+        //             // Create a new div for each sticky note
+        //             const newStickyNote = document.createElement('div');
+        //             newStickyNote.classList.add('sticky-note');  // Add CSS class for styling
+
+        //             // Format the data for display
+        //             // const userText = `You said: "${result.input}"`;
+        //             const userText = result.input;
+        //             console.log(userText);
+        //             const sentimentText = ` - Sentiment: ${result.sentiment}`;
+        //             console.log(sentimentText);
+        //             const wordwareText = result.wordware_response.response ? 
+        //                 `\nWordware's Suggestion: ${result.wordware_response.response}` : 
+        //                 `\nWordware's Suggestion: No response available.`;
+
+        //             // Combine all into the sticky note's content
+        //             // newStickyNote.textContent = `${userText}${sentimentText}${wordwareText}`;
+        //             newStickyNote.textContent = `${wordwareText}`;
+        //             console.log('wordware text', wordwareText);
+
+        //             let convertedText = mdToHtml(wordwareText);
+        //             console.log(convertedText);
+
+        //             cleanedOutput = removeFirstLine(convertedText);
+        //             console.log(cleanedOutput);
+
+        //             // newStickyNote.innerHTML = convertedText;
+        //             // newStickyNote.innerHTML = cleanedOutput;
+        //             // finalOutput = splitParagraphs(cleanedOutput);
+        //             let tempDiv = document.createElement('div');
+        //             tempDiv.innerHTML = cleanedOutput;
+
+        //             // get all the <h2> heading elements to split by with array to hold them
+        //             var queryString = "h2";
+        //             var queryStringTag = "H2";
+        //             if (cleanedOutput.includes("h2")) {
+        //                 queryString = 'h2';
+        //                 queryStringTag = "H2";
+        //             } else if (cleanedOutput.includes("h3")) {
+        //                 queryString = 'h3';
+        //                 queryStringTag = "H3";
+        //             } 
+        //             let headings = tempDiv.querySelectorAll(queryString);
+        //             let contentSections = [];
+
+        //             // loop each heading and get the content
+        //             headings.forEach((heading) => {
+        //                 let content = heading.outerHTML;
+        //                 let nextElement = heading.nextElementSibling;
+
+        //                 while (nextElement && nextElement.tagName !== queryStringTag) {
+        //                     content += nextElement.outerHTML;
+        //                     nextElement = nextElement.nextElementSibling;
+        //                 }
+
+        //                 let sectionDiv = document.createElement('div');
+        //                 sectionDiv.innerHTML = content;
+        //                 contentSections.push(sectionDiv);
+        //             })
+
+        //             // let targetContainer = document.getElementById("stickyNotesContainer");
+        //             let i = 1;
+        //             let finalString = "";
+        //             contentSections.forEach(section => {
+        //                 if (i <= 3) {
+        //                     // stickyNoteContainer.appendChild(section);
+        //                     console.log('split section', section.outerHTML);
+        //                     finalString = finalString + section.outerHTML;
+        //                     // stickyNotesContainer.innerHTML.appendChild(section.outerHTML);
+        //                     // stickyNotesContainer.innerHTML += `<div>${section.innerHTML}<div>`;
+                            
+        //                 }
+        //                 i++;
+        //             })
+        //             console.log('final html', finalString);
+        //             stickyNotesContainer.innerHTML = finalString;
+
+        //             // Append the new sticky note to the container
+        //             // stickyNotesContainer.appendChild(newStickyNote);
+        //             // stickyNotesContainer.innerHTML = convertedText;
+        //             // stickyNotesContainer.innerHTML = finalOutput;
+        //             addStickyNote(userText);
+        //             document.body.style.cursor = 'default';
+        //             // displayStickyNotes();
+        //         }
+        //         // closeModal();
+        //     } catch (error){
+        //         console.error('Error during fetch: ', error);
+        //         alert('Something went wrong while contacting the backend.');
+        //     }
+        // }
         window.onload = displayStickyNotes();
         // window.onload = checkDate();
     </script>
