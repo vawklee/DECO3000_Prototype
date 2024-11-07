@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 from textblob import TextBlob
 # Load API_KEY from .env
+# Refer to README.md for details about API_KEY
+# API_KEY can be found in a .txt file in our .zip submission folder
+# Create a .env file with the following: "API_KEY = paste key from text file here"
 load_dotenv()
 api_key = os.getenv('API_KEY')
 # Check if the API key was loaded correctly
