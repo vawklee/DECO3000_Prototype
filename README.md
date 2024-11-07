@@ -28,7 +28,7 @@ To set up the API key for use in this project:
 1. Ensure that you have followed the instructions listed under [Setup](#setup) and [API Requirements](#api)
 2. To run the app, type `flask run` into the terminal
 3. The app can be viewed at http://127.0.0.1:5000/ (Port number may vary, refer to the terminal for any differences)
-4. Exit the app at any time by pressing `Control + C` in your terminal
+4. Stop the app server at any time by pressing `Control + C` in your terminal
 
 DISCLAIMER: When using the app and clicking the button `Process sticky-notes`, the web app may take a minute or two to generate and load the output; This wait time is normal (Wordware is slow), DO NOT click the button again to try and generate more than 1 response at a time.
 
