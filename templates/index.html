@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>DECO3000 AI Prototype</title>
+    <!-- below is used for custom font sourced from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
@@ -11,50 +12,47 @@
             --background: rgb(253, 253, 249);
             --pink: rgb(255, 186, 186);
             --purple: rgb(218, 186, 255);
-            --darkPurple: rgb(106, 71, 130);
+            --buttonPurple: rgb(238, 224, 255);
+            --darkPurple: rgb(162, 104, 232);
             --blue: rgb(186, 225, 255);
             --outputBlue: rgb(135, 174, 227);
+            --blueButton: rgb(219, 235, 255);
             --darkBlue: rgb(75, 125, 193);
             --green: rgb(199, 255, 186);
             --yellow: rgb(255, 252, 186);
         }
 
+        /* Font styling */
         .sarabun-regular, body, p, form, input {
         font-family: "Sarabun", serif;
         font-weight: 400;
         font-style: normal;
         }
-
         .sarabun-semibold {
         font-family: "Sarabun", serif;
         font-weight: 600;
         font-style: normal;
         }
-
         .sarabun-bold, h1, h2, h3, #outputLabel {
         font-family: "Sarabun", serif;
         font-weight: 700;
         font-style: normal;
         }
-
-        .sarabun-regular-italic {
+        .sarabun-regular-italic, .sticky-date {
         font-family: "Sarabun", serif;
         font-weight: 400;
         font-style: italic;
         }
-
         .sarabun-semibold-italic {
         font-family: "Sarabun", serif;
         font-weight: 600;
         font-style: italic;
         }
-
         .sarabun-bold-italic {
         font-family: "Sarabun", serif;
         font-weight: 700;
         font-style: italic;
         }
-
 
         body {
             background-color: var(--background);
@@ -120,6 +118,7 @@
             color: var(--darkBlue);
         }
 
+        /* container for the sticky notes */
         #stickyNoteDisplay {
             width: 100%;
             display: flex;
@@ -129,6 +128,9 @@
 
         /* styling for each sticky note */
         #stickyNoteDisplay>div {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             width: 200px;
             height: 200px;
             border-radius: 5px;
@@ -144,6 +146,24 @@
             background-color: #c9c9c9;
         }
 
+        .deleteButton {
+            align-self: flex-end;
+            padding: 5px;
+            width: 35%;
+            background-color: var(--buttonPurple);
+            border: var(--darkPurple) solid 2px;
+            border-radius: 5px;
+        }
+        .deleteButton:hover {
+            background-color: var(--darkPurple);
+        }
+
+        .sticky-date {
+            font-size: smaller;
+            margin: 0;
+        }
+
+        /* styling input text boxs */
         form {
             display: flex;
             flex-direction: column;
@@ -152,7 +172,7 @@
         input[type=text] {
             padding: 20px;
             font-size: medium;
-            margin: 30px 0;
+            margin: 30px 0 20px 0;
             height: 20vh;
             width: 100%;
             border:#adadad solid 2px;
@@ -167,7 +187,11 @@
             align-self: center;
             text-align: center;
         }
+        button, input[type=submit] {
+            font-size: medium;
+        }
 
+        /* specific text styling for information */
         .subtitleLabel {
             font-style: italic;
             font-size: small;
@@ -176,63 +200,72 @@
             text-decoration: underline;
             font-weight: 700;
         }
+
+        #generateBtn {
+            padding: 5px;
+            margin: 15px;
+            background-color: var(--blueButton);
+            border: var(--darkBlue) solid 2px;
+            border-radius: 5px;
+            width: 30%;
+        }
+        #generateBtn:hover {
+            background-color: var(--darkBlue);
+            color: white;
+        }
+
+        .stickyBottomContainer {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
     </style>
   </head>
   <body>
     <main>
         <h1>the emo-board <span class="subtitleLabel">DECO3000 Mental Health Sticky Notes AI App</span></h1>
-        <!-- <p>Welcome to the sticky-note whiteboard!</p> -->
         <article>
             <section class="promptSection">
                 <!-- button opens the stickynote modal -->
                 <!-- <button id="createSticky">Create sticky note</button> -->
+                <!-- form is for user input with the textbox, anything the user types is converted into a stickynote -->
                 <form id="stickyNoteForm" onsubmit="submitForm(event)" method="POST">
-                    <label for="stickyNoteInput">Type out your thoughts or experiences today, like how you are feeling and what has happened in your day. When you are done, click the submit button <span class="boldUnderlineLabel">once</span> to get guidance on your emotions and how to communicate them.</label>
+                    <label for="stickyNoteInput">Type out your thoughts or experiences today, like how you are feeling and what has happened in your day. When you are done, click the process button <span class="boldUnderlineLabel">once</span> to get guidance on your emotions and how to communicate them.</label>
                     <input required type="text" id="stickyNoteInput" name="stickyNoteInput" placeholder="Type up your feelings here...." value="">
-                    <input type="submit" value="Submit" id="formSubmitBtn" onclick="onButtonClick()">
+                    <input type="submit" value="Add sticky-note" id="formSubmitBtn" onclick="onButtonClick()">
                 </form>
                 <div id="stickyNoteDisplay"></div>
-                <!-- <article id="stickyModal" class="popup">
-                    <section class="stickyModalContent">
-                        <span class="closeModal">&times;</span>
-                        <p>This is where you would type your thoughts and how you are feeling today</p>
-                        Modified the form to send a request to Flask Backend to be reviewed
-                        <form id="'stickyNoteForm" onsubmit="submitForm(event)" method ="POST">
-                            <label for="stickyNoteInput">How are you feeling? What are your thoughts?</label>
-                            <input required type="text" id="stickyNoteInput" name="stickyNoteInput" placeholder="Type something here...." value="">
-                            <input type="submit" value="Submit">
-                        </form>
-                    </section>
-                </article> -->
-            
-                <!-- <h2 id="editable">...</h2> -->
             </section>
             <section class="outputSection">
-                <!-- stickyNotesContainer is used for the output -->
+                <!-- stickyNotesContainer is used for the output generated by Wordware -->
                 <div id="outputLabel">Generated guidance</div>
                 <div id="stickyNotesContainer"><p><em>Type something and add a sticky note to generate an output</em></p>
-                    <button id="generateBtn" onclick="generateResponse()">
-                        Generate Response
-                      </button> 
+                    <!-- button calls the NLP and Wordware API to generate an output -->
+                     <!-- API_KEY is required for this backend to work, refer to README.md and the text file included in .zip submission folder -->
+                    <button id="generateBtn" onclick="generateResponse()">Process sticky-notes</button>
                 </div>
-                       
             </section>
         </article>
     </main>
 
     <script>
-              // code derived from Advanced Web
-              const stickyNoteForm = document.getElementById('stickyNoteForm');
-              var stickyNoteDisplay = document.getElementById("stickyNoteDisplay");
-              var submitButton = document.getElementById('formSubmitBtn');
+        // code derived from Advanced Web
+        const stickyNoteForm = document.getElementById('stickyNoteForm');
+        var stickyNoteDisplay = document.getElementById("stickyNoteDisplay");
+        var submitButton = document.getElementById('formSubmitBtn');
 
-              function displayStickyNotes() {
-        const localSticky = JSON.parse(localStorage.getItem('stickies')) || [];
-        stickyNoteDisplay.innerHTML = '';
+        function displayStickyNotes() {
+            const localSticky = JSON.parse(localStorage.getItem('stickies')) || [];
+            stickyNoteDisplay.innerHTML = '';
 
             if (localSticky !== null) {
                 localSticky.forEach(function(stickyNote) {
                     let item = document.createElement('div');
+                    let infoContainer = document.createElement('div');
+                    let bottomContainer = document.createElement('div');
+                    bottomContainer.className = "stickyBottomContainer";
+
                     let currentDate = new Date().toDateString();
                     item.setAttribute('data-id', stickyNote.id);
 
@@ -242,22 +275,30 @@
                     } else {
                         item.className = "oldSticky";
                     }
-                     // Add the date
+                        // Add the date
                     let dateElement = document.createElement('p');
                     dateElement.classList.add('sticky-date');
-                    dateElement.textContent = `Date: ${stickyNote.date}`;  // Display the date
+                    dateElement.textContent = `${stickyNote.date}`;  // Display the date
 
                     let information = document.createElement('p');
                     information.innerHTML = `<p>${stickyNote.info}</p>`;
 
                     // Create a delete button
                     let deleteButton = document.createElement('button');
+                    deleteButton.classList = 'deleteButton';
                     deleteButton.textContent = "Delete";
                     deleteButton.onclick = () => deleteStickyNote(stickyNote.id);
 
-                    item.appendChild(dateElement);
-                    item.appendChild(information);
-                    item.appendChild(deleteButton); // Add delete button to sticky note
+                    // add all the relevant containers to the stickynote
+                    infoContainer.appendChild(information);
+
+                    bottomContainer.appendChild(dateElement);
+                    bottomContainer.appendChild(deleteButton);
+
+                    item.appendChild(infoContainer);
+                    // item.appendChild(deleteButton); 
+
+                    item.appendChild(bottomContainer);
                     stickyNoteDisplay.appendChild(item);
                     stickyNoteForm.reset();
                 })
@@ -265,6 +306,7 @@
                 console.log("sticky note display is currently empty");
             }
         }
+        
         function addStickyNote(info) {
             let stickyNote = {
                 info,
@@ -289,19 +331,6 @@
             stickyNoteDisplay.innerHTML = "";
             displayStickyNotes();
         }
-
-        // function onButtonClick() {
-        //     // setTimeout(() => {
-        //     //     console.log("Waited for 5 seconds");
-        //     //     document.body.style.cursor = 'wait';
-        //     // }, 5000);
-        //     // document.body.style.cursor = 'default';
-
-        //     let userSubmission = document.getElementById("stickyNoteInput").value;
-        //     console.log(userSubmission);
-        //     // addStickyNote(userSubmission);
-        //     // displayStickyNotes();
-        // }
 
         // translating markdown to usable HTML
         function mdToHtml(markdown) {
@@ -365,41 +394,6 @@
                 targetContainer.appendChild(section);
             })
         }
-
-        // How to manage the emotions you are feeling
-        // How to commmunicate your emotions
-
-        // function checkDate() {
-        //     let localSticky = JSON.parse(localStorage.getItem('stickies'));
-        //     let currentDate = new Date().toDateString();
-
-        //     // if (localSticky !== null) {
-        //     //     localSticky.forEach(function(stickyNote) {
-        //     //         let item = document.createElement('div');
-        //     //         item.setAttribute('data-id', stickyNote.id);
-
-        //     //         let information = document.createElement('p');
-        //     //         information.innerHTML = `<p>${stickyNote.info}</p>`;
-
-        //     //         item.appendChild(information);
-        //     //         stickyNoteDisplay.appendChild(item);
-        //     //         stickyNoteForm.reset();
-        //     //     })
-        //     // } else {
-        //     //     console.log("sticky note display is currently empty");
-        //     // }
-        //     if (localSticky !== null) {
-        //         localSticky.forEach(function(stickyNote) {
-        //             console.log(stickyNote.id, stickyNote.info, stickyNote.date);
-        //             console.log('todays date', currentDate);
-        //             console.log(stickyNote.classList);
-        //             if (stickyNote.date = currentDate) {
-        //             }
-        //         })
-        //     } else {
-        //         console.log("sticky note display is currently empty");
-        //     }
-        // }
 
         // ---- TextBlob and Wordware Backend ----
         // This section handles the sending of form data to flask backend
