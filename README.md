@@ -19,3 +19,5 @@ This currently includes: [Showdown](https://github.com/showdownjs/showdown)
 1. To run the app, type `flask run` into the terminal
 2. The app can be viewed at http://127.0.0.1:5000/ (Port number may vary, refer to the terminal for any differences)
 3. Exit the app at any time by pressing `Control + C`
+
+## Viewing Resolution

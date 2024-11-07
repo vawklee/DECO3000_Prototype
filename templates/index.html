@@ -11,9 +11,11 @@
             --background: rgb(253, 253, 249);
             --pink: rgb(255, 186, 186);
             --purple: rgb(218, 186, 255);
-            --darkPurple: rgb(106, 71, 130);
+            --buttonPurple: rgb(238, 224, 255);
+            --darkPurple: rgb(162, 104, 232);
             --blue: rgb(186, 225, 255);
             --outputBlue: rgb(135, 174, 227);
+            --blueButton: rgb(219, 235, 255);
             --darkBlue: rgb(75, 125, 193);
             --green: rgb(199, 255, 186);
             --yellow: rgb(255, 252, 186);
@@ -37,7 +39,7 @@
         font-style: normal;
         }
 
-        .sarabun-regular-italic {
+        .sarabun-regular-italic, .sticky-date {
         font-family: "Sarabun", serif;
         font-weight: 400;
         font-style: italic;
@@ -129,6 +131,9 @@
 
         /* styling for each sticky note */
         #stickyNoteDisplay>div {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             width: 200px;
             height: 200px;
             border-radius: 5px;
@@ -144,6 +149,22 @@
             background-color: #c9c9c9;
         }
 
+        .deleteButton {
+            align-self: flex-end;
+            padding: 5px;
+            width: 35%;
+            background-color: var(--buttonPurple);
+            border: var(--darkPurple) solid 2px;
+            border-radius: 5px;
+        }
+        .deleteButton:hover {
+            background-color: var(--darkPurple);
+        }
+
+        .sticky-date {
+            font-size: smaller;
+        }
+
         form {
             display: flex;
             flex-direction: column;
@@ -152,7 +173,7 @@
         input[type=text] {
             padding: 20px;
             font-size: medium;
-            margin: 30px 0;
+            margin: 30px 0 20px 0;
             height: 20vh;
             width: 100%;
             border:#adadad solid 2px;
@@ -167,6 +188,9 @@
             align-self: center;
             text-align: center;
         }
+        button, input[type=submit] {
+            font-size: medium;
+        }
 
         .subtitleLabel {
             font-style: italic;
@@ -175,6 +199,19 @@
         .boldUnderlineLabel {
             text-decoration: underline;
             font-weight: 700;
+        }
+
+        #generateBtn {
+            padding: 5px;
+            margin: 15px;
+            background-color: var(--blueButton);
+            border: var(--darkBlue) solid 2px;
+            border-radius: 5px;
+            width: 30%;
+        }
+        #generateBtn:hover {
+            background-color: var(--darkBlue);
+            color: white;
         }
     </style>
   </head>
@@ -189,7 +226,7 @@
                 <form id="stickyNoteForm" onsubmit="submitForm(event)" method="POST">
                     <label for="stickyNoteInput">Type out your thoughts or experiences today, like how you are feeling and what has happened in your day. When you are done, click the submit button <span class="boldUnderlineLabel">once</span> to get guidance on your emotions and how to communicate them.</label>
                     <input required type="text" id="stickyNoteInput" name="stickyNoteInput" placeholder="Type up your feelings here...." value="">
-                    <input type="submit" value="Submit" id="formSubmitBtn" onclick="onButtonClick()">
+                    <input type="submit" value="Add sticky-note" id="formSubmitBtn" onclick="onButtonClick()">
                 </form>
                 <div id="stickyNoteDisplay"></div>
                 <!-- <article id="stickyModal" class="popup">
@@ -211,9 +248,7 @@
                 <!-- stickyNotesContainer is used for the output -->
                 <div id="outputLabel">Generated guidance</div>
                 <div id="stickyNotesContainer"><p><em>Type something and add a sticky note to generate an output</em></p>
-                    <button id="generateBtn" onclick="generateResponse()">
-                        Generate Response
-                      </button> 
+                    <button id="generateBtn" onclick="generateResponse()">Process sticky-notes</button>
                 </div>
                        
             </section>
@@ -221,18 +256,19 @@
     </main>
 
     <script>
-              // code derived from Advanced Web
-              const stickyNoteForm = document.getElementById('stickyNoteForm');
-              var stickyNoteDisplay = document.getElementById("stickyNoteDisplay");
-              var submitButton = document.getElementById('formSubmitBtn');
+        // code derived from Advanced Web
+        const stickyNoteForm = document.getElementById('stickyNoteForm');
+        var stickyNoteDisplay = document.getElementById("stickyNoteDisplay");
+        var submitButton = document.getElementById('formSubmitBtn');
 
-              function displayStickyNotes() {
-        const localSticky = JSON.parse(localStorage.getItem('stickies')) || [];
-        stickyNoteDisplay.innerHTML = '';
+        function displayStickyNotes() {
+            const localSticky = JSON.parse(localStorage.getItem('stickies')) || [];
+            stickyNoteDisplay.innerHTML = '';
 
             if (localSticky !== null) {
                 localSticky.forEach(function(stickyNote) {
                     let item = document.createElement('div');
+                    let infoContainer = document.createElement('div');
                     let currentDate = new Date().toDateString();
                     item.setAttribute('data-id', stickyNote.id);
 
@@ -242,7 +278,7 @@
                     } else {
                         item.className = "oldSticky";
                     }
-                     // Add the date
+                        // Add the date
                     let dateElement = document.createElement('p');
                     dateElement.classList.add('sticky-date');
                     dateElement.textContent = `Date: ${stickyNote.date}`;  // Display the date
@@ -252,11 +288,15 @@
 
                     // Create a delete button
                     let deleteButton = document.createElement('button');
+                    deleteButton.classList = 'deleteButton';
                     deleteButton.textContent = "Delete";
                     deleteButton.onclick = () => deleteStickyNote(stickyNote.id);
 
-                    item.appendChild(dateElement);
-                    item.appendChild(information);
+                    // item.appendChild(dateElement);
+                    // item.appendChild(information);
+                    infoContainer.appendChild(dateElement);
+                    infoContainer.appendChild(information);
+                    item.appendChild(infoContainer);
                     item.appendChild(deleteButton); // Add delete button to sticky note
                     stickyNoteDisplay.appendChild(item);
                     stickyNoteForm.reset();
@@ -265,6 +305,7 @@
                 console.log("sticky note display is currently empty");
             }
         }
+        
         function addStickyNote(info) {
             let stickyNote = {
                 info,
@@ -289,19 +330,6 @@
             stickyNoteDisplay.innerHTML = "";
             displayStickyNotes();
         }
-
-        // function onButtonClick() {
-        //     // setTimeout(() => {
-        //     //     console.log("Waited for 5 seconds");
-        //     //     document.body.style.cursor = 'wait';
-        //     // }, 5000);
-        //     // document.body.style.cursor = 'default';
-
-        //     let userSubmission = document.getElementById("stickyNoteInput").value;
-        //     console.log(userSubmission);
-        //     // addStickyNote(userSubmission);
-        //     // displayStickyNotes();
-        // }
 
         // translating markdown to usable HTML
         function mdToHtml(markdown) {
