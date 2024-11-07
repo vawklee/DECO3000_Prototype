@@ -9,7 +9,7 @@ This is for the DECO3000 Designing Intelligent Systems course. Our AI app aims t
 5. [Troubleshooting](#troubleshooting)
 
 ## Set up the app on a local machine <a id="setup"></a>
-1. Ensure that you have Python Version 3.9.2 installed and ready to use
+1. Ensure that you have (Python Version 3.9.2)[https://www.python.org/downloads/release/python-392/] installed and ready to use. As part of the process, you will need to include `pip` in your installation
 2. Using your preferred code editor, use the terminal and type `git clone https://github.com/vawklee/DECO3000_Prototype.git` to clone the GitHub Repository
 3. Create a virtual environment by typing `python3 -m venv venv` in the terminal
 4. Activate the virtual environment by typing `. venv/bin/activate`. Refer [here](https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/) for information about virtual environments in Python
