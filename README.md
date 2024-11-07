@@ -9,20 +9,11 @@ This is for the DECO3000 Designing Intelligent Systems course. Our AI app aims t
 5. [Troubleshooting](#troubleshooting)
 
 ## Set up the app on a local machine <a id="setup"></a>
-1. Ensure that you have Python Version 3.9.2 installed and ready to use
-2. Using your preferred code editor, use the terminal and type `git clone https://github.com/vawklee/DECO3000_Prototype.git` to clone the GitHub Repository
-3. Create a virtual environment by typing `python3 -m venv venv` in the terminal
-4. Activate the virtual environment by typing `. venv/bin/activate`. Refer [here](https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/) for information about virtual environments in Python
-5. Type `pip install -r requirements.txt` into the terminal to install all dependencies in your environment
-
-OR 
-
-6. Set up the required libraries by typing the following commands into your terminal:
-
-    6.1 `pip install python-dotenv`
-    <br>6.2 `pip install flask`
-    <br>6.3 `pip install requests`
-    <br>6.4 `pip install textblob`
+1. Ensure that you have [Python Version 3.9.2](https://www.python.org/downloads/release/python-392/) installed and ready to use. As part of the process, you will need to include `pip` in your installation and ensure that "Add Python to environment variables" is selected
+2. Using your preferred code editor (we recommend Visual Studio Code), use the terminal and type `git clone https://github.com/vawklee/DECO3000_Prototype.git` to clone the GitHub Repository
+3. Create a virtual environment by typing `python -m venv .venv` in the terminal; If you experience any issues with setting up an environment with the terminal, please refer to the [VSCode Documentation here](https://code.visualstudio.com/docs/python/environments) for setting up the virtual environment
+4. Activate the virtual environment by typing `.venv\Scripts\Activate`. Refer [here](https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/) for information about virtual environments in Python and [here](https://edstem.org/au/courses/18525/discussion/2200662) for the tutor's instructions we followed. NOTE: Powershell scripts may be deactivated by default. You can temporarily enable them in your terminal with `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`
+5. Type `pip install -r requirements.txt` into the terminal to install all dependencies into your environment
 
 ### API Key Requirements <a id="api"></a>
 This project requires a Wordware API key. For the purposes of this assignment submission, the API key will be included in a .txt file that can be found in the .zip submission folder. 
@@ -36,7 +27,7 @@ To set up the API key for use in this project:
 1. Ensure that you have followed the instructions listed under [Setup](#setup) and [API Requirements](#api)
 2. To run the app, type `flask run` into the terminal
 3. The app can be viewed at http://127.0.0.1:5000/ (Port number may vary, refer to the terminal for any differences)
-4. Exit the app at any time by pressing `Control + C` in your terminal
+4. Stop the app server at any time by pressing `Control + C` in your terminal
 
 DISCLAIMER: When using the app and clicking the button `Process sticky-notes`, the web app may take a minute or two to generate and load the output; This wait time is normal (Wordware is slow), DO NOT click the button again to try and generate more than 1 response at a time.
 
