@@ -163,6 +163,7 @@
 
         .sticky-date {
             font-size: smaller;
+            margin: 0;
         }
 
         form {
@@ -213,6 +214,13 @@
             background-color: var(--darkBlue);
             color: white;
         }
+
+        .stickyBottomContainer {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
     </style>
   </head>
   <body>
@@ -224,7 +232,7 @@
                 <!-- button opens the stickynote modal -->
                 <!-- <button id="createSticky">Create sticky note</button> -->
                 <form id="stickyNoteForm" onsubmit="submitForm(event)" method="POST">
-                    <label for="stickyNoteInput">Type out your thoughts or experiences today, like how you are feeling and what has happened in your day. When you are done, click the submit button <span class="boldUnderlineLabel">once</span> to get guidance on your emotions and how to communicate them.</label>
+                    <label for="stickyNoteInput">Type out your thoughts or experiences today, like how you are feeling and what has happened in your day. When you are done, click the process button <span class="boldUnderlineLabel">once</span> to get guidance on your emotions and how to communicate them.</label>
                     <input required type="text" id="stickyNoteInput" name="stickyNoteInput" placeholder="Type up your feelings here...." value="">
                     <input type="submit" value="Add sticky-note" id="formSubmitBtn" onclick="onButtonClick()">
                 </form>
@@ -269,6 +277,9 @@
                 localSticky.forEach(function(stickyNote) {
                     let item = document.createElement('div');
                     let infoContainer = document.createElement('div');
+                    let bottomContainer = document.createElement('div');
+                    bottomContainer.className = "stickyBottomContainer";
+
                     let currentDate = new Date().toDateString();
                     item.setAttribute('data-id', stickyNote.id);
 
@@ -281,7 +292,7 @@
                         // Add the date
                     let dateElement = document.createElement('p');
                     dateElement.classList.add('sticky-date');
-                    dateElement.textContent = `Date: ${stickyNote.date}`;  // Display the date
+                    dateElement.textContent = `${stickyNote.date}`;  // Display the date
 
                     let information = document.createElement('p');
                     information.innerHTML = `<p>${stickyNote.info}</p>`;
@@ -294,10 +305,16 @@
 
                     // item.appendChild(dateElement);
                     // item.appendChild(information);
-                    infoContainer.appendChild(dateElement);
+                    // infoContainer.appendChild(dateElement);
                     infoContainer.appendChild(information);
+
+                    bottomContainer.appendChild(dateElement);
+                    bottomContainer.appendChild(deleteButton);
+
                     item.appendChild(infoContainer);
-                    item.appendChild(deleteButton); // Add delete button to sticky note
+                    // item.appendChild(deleteButton); 
+
+                    item.appendChild(bottomContainer);
                     stickyNoteDisplay.appendChild(item);
                     stickyNoteForm.reset();
                 })
@@ -393,41 +410,6 @@
                 targetContainer.appendChild(section);
             })
         }
-
-        // How to manage the emotions you are feeling
-        // How to commmunicate your emotions
-
-        // function checkDate() {
-        //     let localSticky = JSON.parse(localStorage.getItem('stickies'));
-        //     let currentDate = new Date().toDateString();
-
-        //     // if (localSticky !== null) {
-        //     //     localSticky.forEach(function(stickyNote) {
-        //     //         let item = document.createElement('div');
-        //     //         item.setAttribute('data-id', stickyNote.id);
-
-        //     //         let information = document.createElement('p');
-        //     //         information.innerHTML = `<p>${stickyNote.info}</p>`;
-
-        //     //         item.appendChild(information);
-        //     //         stickyNoteDisplay.appendChild(item);
-        //     //         stickyNoteForm.reset();
-        //     //     })
-        //     // } else {
-        //     //     console.log("sticky note display is currently empty");
-        //     // }
-        //     if (localSticky !== null) {
-        //         localSticky.forEach(function(stickyNote) {
-        //             console.log(stickyNote.id, stickyNote.info, stickyNote.date);
-        //             console.log('todays date', currentDate);
-        //             console.log(stickyNote.classList);
-        //             if (stickyNote.date = currentDate) {
-        //             }
-        //         })
-        //     } else {
-        //         console.log("sticky note display is currently empty");
-        //     }
-        // }
 
         // ---- TextBlob and Wordware Backend ----
         // This section handles the sending of form data to flask backend
