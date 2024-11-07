@@ -14,16 +14,7 @@ This is for the DECO3000 Designing Intelligent Systems course. Our AI app aims t
 3. Create a virtual environment by typing `python -m venv .venv` in the terminal; If you experience any issues with setting up an environment with the terminal, please refer to the [VSCode Documentation here](https://code.visualstudio.com/docs/python/environments) for setting up the virtual environment
 4. Activate the virtual environment by typing `.venv\Scripts\Activate`. Refer [here](https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/) for information about virtual environments in Python and [here](https://edstem.org/au/courses/18525/discussion/2200662) for the tutor's instructions we followed.
 5. NOTE: Powershell scripts may be deactivated by default. You can temporarily enable them in your terminal with `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`
-6. Type `pip install -r requirements.txt` into the terminal to install all dependencies in your environment
-
-OR 
-
-6. Set up the required libraries by typing the following commands into your terminal:
-
-    6.1 `pip install python-dotenv`
-    <br>6.2 `pip install flask`
-    <br>6.3 `pip install requests`
-    <br>6.4 `pip install textblob`
+6. Type `pip install -r requirements.txt` into the terminal to install all dependencies into your environment
 
 ### API Key Requirements <a id="api"></a>
 This project requires a Wordware API key. For the purposes of this assignment submission, the API key will be included in a .txt file that can be found in the .zip submission folder. 
