@@ -451,8 +451,55 @@
                 alert('Error: ' + result.error);
             } else {
                 const wordwareText = result.wordware_response.response || "No response available.";
-                const convertedText = mdToHtml(removeFirstLine(wordwareText));
-                stickyNotesContainer.innerHTML = convertedText;
+                // const convertedText = mdToHtml(removeFirstLine(wordwareText));
+
+                const convertedText = removeFirstLine(mdToHtml(wordwareText));
+
+                let tempDiv = document.createElement('div');
+                tempDiv.innerHTML = convertedText;
+
+                // get all the <h2> heading elements to split by with array to hold them
+                var queryString = "h2";
+                var queryStringTag = "H2";
+                if (convertedText.includes("h2")) {
+                    queryString = 'h2';
+                    queryStringTag = "H2";
+                } else if (convertedText.includes("h3")) {
+                    queryString = 'h3';
+                    queryStringTag = "H3";
+                } 
+                let headings = tempDiv.querySelectorAll(queryString);
+                let contentSections = [];
+
+                // loop each heading and get the content
+                headings.forEach((heading) => {
+                    let content = heading.outerHTML;
+                    let nextElement = heading.nextElementSibling;
+
+                    while (nextElement && nextElement.tagName !== queryStringTag) {
+                        content += nextElement.outerHTML;
+                        nextElement = nextElement.nextElementSibling;
+                    }
+
+                    let sectionDiv = document.createElement('div');
+                    sectionDiv.innerHTML = content;
+                    contentSections.push(sectionDiv);
+                })
+
+                let i = 1;
+                let finalString = "";
+                contentSections.forEach(section => {
+                    if (i <= 3) {
+                        console.log('split section', section.outerHTML);
+                        finalString = finalString + section.outerHTML;
+                        
+                    }
+                    i++;
+                })
+                console.log('final html', finalString);
+                stickyNotesContainer.innerHTML = finalString;
+
+                // stickyNotesContainer.innerHTML = convertedText;
             }
         } catch (error) {
             console.error('Error during fetch: ', error);
