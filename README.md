@@ -33,7 +33,7 @@ To set up the API key for use in this project:
 3. Paste it into your .env file in the following format: `API_KEY = paste api key here` (do not include quotation marks)
 
 ## Deploy app on a local machine <a id="deploy"></a>
-1. Ensure that you have followed the instructions listed under 
+1. Ensure that you have followed the instructions listed under [Setup](#setup) and [API Requirements](#api)
 2. To run the app, type `flask run` into the terminal
 3. The app can be viewed at http://127.0.0.1:5000/ (Port number may vary, refer to the terminal for any differences)
 4. Exit the app at any time by pressing `Control + C` in your terminal
